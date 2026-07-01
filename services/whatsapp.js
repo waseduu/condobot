@@ -34,9 +34,7 @@ const WhatsAppService = {
     const caminhosChrome = [
       'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
       '/usr/bin/google-chrome',
-      '/usr/bin/google-chrome-stable',
-      '/usr/bin/chromium',
-      '/usr/bin/chromium-browser'
+      '/usr/bin/google-chrome-stable'
     ];
     for (const p of caminhosChrome) {
       try {
