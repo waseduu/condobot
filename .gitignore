@@ -1,0 +1,6 @@
+node_modules/
+wpp_session/
+server.log
+server.err
+*.db
+.env

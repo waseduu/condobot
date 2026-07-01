@@ -1,0 +1,146 @@
+body {
+  background-color: #0f1419;
+  color: #e7e9ea;
+}
+
+.card, .modal-content {
+  background-color: #1a1f2e;
+  border-color: #2a3040;
+}
+
+.card-header {
+  background-color: #1e2538;
+  border-bottom-color: #2a3040;
+  color: #e7e9ea;
+  font-weight: 500;
+}
+
+.table {
+  color: #e7e9ea;
+  margin-bottom: 0;
+}
+
+.table > :not(caption) > * > * {
+  border-bottom-color: #2a3040;
+  background-color: transparent;
+}
+
+.table-hover > tbody > tr:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.table thead th {
+  border-bottom-color: #2a3040;
+  color: #8b98a5;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-dash {
+  background: linear-gradient(135deg, #1a1f2e 0%, #1e2538 100%);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 12px;
+}
+
+.card-dash:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.form-control, .form-select {
+  background-color: #0f1419;
+  border-color: #2a3040;
+  color: #e7e9ea;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: #0f1419;
+  border-color: #375a7f;
+  color: #e7e9ea;
+  box-shadow: 0 0 0 0.2rem rgba(55, 90, 127, 0.25);
+}
+
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #1d9bf0;
+  border-color: #1d9bf0;
+}
+
+.btn-primary:hover {
+  background-color: #1a8cd8;
+  border-color: #1a8cd8;
+}
+
+.modal-header {
+  border-bottom-color: #2a3040;
+}
+
+.modal-footer {
+  border-top-color: #2a3040;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.4em 0.7em;
+}
+
+.navbar {
+  background-color: #1a1f2e !important;
+  border-bottom: 1px solid #2a3040;
+}
+
+.nav-link {
+  color: #8b98a5;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #e7e9ea;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f1419;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a3040;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #375a7f;
+}
+
+@media (max-width: 767px) {
+  .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  .card-dash h3, .card-dash h4 {
+    font-size: 1.1rem;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem;
+  }
+}

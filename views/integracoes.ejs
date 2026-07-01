@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CondoBot - Integrações</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <%- include('partials/navbar') %>
+  <div class="container-fluid px-4 py-4">
+    <h2 class="mb-4"><i class="bi bi-plugin me-2"></i>Integrações</h2>
+
+    <% if (typeof erro !== 'undefined' && erro) { %>
+      <div class="alert alert-danger"><%= erro %></div>
+    <% } %>
+    <% if (typeof pix_salvo !== 'undefined') { %>
+      <div class="alert alert-success">Configurações do PIX salvas!</div>
+    <% } %>
+    <% if (typeof wpp_ok !== 'undefined') { %>
+      <div class="alert alert-success">Mensagem de teste enviada com sucesso!</div>
+    <% } %>
+    <% if (typeof mp_salvo !== 'undefined') { %>
+      <div class="alert alert-success">Configurações do Mercado Pago salvas!</div>
+    <% } %>
+
+    <div class="row g-4">
+      <!-- WhatsApp -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-whatsapp text-success me-2"></i>WhatsApp</span>
+            <span class="badge bg-<%= wppStatus.connected ? 'success' : 'warning' %>" id="wppStatusBadge">
+              <%= wppStatus.connected ? 'Conectado' : 'Desconectado' %>
+            </span>
+          </div>
+          <div class="card-body text-center" id="wppBody">
+            <% if (wppStatus.connected) { %>
+              <div class="py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size:4rem;"></i>
+                <h5 class="mt-3 text-success">WhatsApp Conectado</h5>
+                <p class="text-body-secondary">O WhatsApp está conectado e pronto para enviar mensagens.</p>
+                <form method="POST" action="/integracoes/whatsapp/testar" class="row g-2 justify-content-center mb-3">
+                  <div class="col-8">
+                    <input type="text" name="para" class="form-control" placeholder="5511999999999" required>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn btn-success w-100"><i class="bi bi-send"></i> Testar</button>
+                  </div>
+                </form>
+                <form method="POST" action="/integracoes/whatsapp/reconectar">
+                  <button class="btn btn-outline-danger btn-sm"><i class="bi bi-arrow-counterclockwise"></i> Reconectar</button>
+                </form>
+              </div>
+            <% } else if (wppStatus.status === 'escaneie_o_qr') { %>
+              <div class="py-3">
+                <h5 class="mb-3 text-warning"><i class="bi bi-qr-code-scan me-2"></i>Escaneie o QR Code</h5>
+                <p class="text-body-secondary small">Abra o WhatsApp no celular > Menu > WhatsApp Web > Escaneie</p>
+                <div class="d-flex justify-content-center mb-3">
+                  <div class="bg-white p-2 rounded" id="qrcode-container">
+                    <img id="qrcode-img" src="" alt="QR Code" style="width:220px;height:220px;">
+                  </div>
+                </div>
+                <div class="spinner-border spinner-border-sm text-warning me-1" role="status"></div>
+                <small class="text-body-secondary">Aguardando leitura...</small>
+                <form method="POST" action="/integracoes/whatsapp/reconectar" class="mt-3">
+                  <button class="btn btn-outline-danger btn-sm"><i class="bi bi-arrow-counterclockwise"></i> Gerar novo QR Code</button>
+                </form>
+              </div>
+            <% } else { %>
+              <div class="py-4">
+                <i class="bi bi-whatsapp text-secondary" style="font-size:4rem;"></i>
+                <h5 class="mt-3">Conecte seu WhatsApp</h5>
+                <p class="text-body-secondary">Inicializando conexão... <br> Escaneie o QR Code com o WhatsApp do celular da administração.</p>
+                <div class="spinner-border text-success" role="status"></div>
+                <p class="text-body-secondary small mt-2">A conexão será estabelecida automaticamente</p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Contatos Mapeados -->
+        <div class="card shadow-sm mt-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-address-book me-2"></i>Contatos Mapeados</span>
+            <span class="badge bg-info"><%= wppContatos.length %></span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr><th>Chat ID</th><th>Morador</th><th>Lote</th><th>Telefone</th><th>Atualizado</th></tr>
+              </thead>
+              <tbody>
+                <% if (wppContatos.length === 0) { %>
+                  <tr><td colspan="5" class="text-center text-body-secondary py-3">Nenhum contato mapeado ainda</td></tr>
+                <% } %>
+                <% wppContatos.forEach(c => { %>
+                <tr>
+                  <td style="font-size:0.7rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= c.chat_id %></td>
+                  <td><%= c.nome || '-' %></td>
+                  <td><%= c.lote || '-' %></td>
+                  <td><%= c.morador_telefone || c.telefone || '-' %></td>
+                  <td style="font-size:0.75rem;"><%= c.updated_at %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer text-body-secondary small">
+            <i class="bi bi-info-circle me-1"></i>Quando você envia uma mensagem de teste, o contato é mapeado automaticamente.
+          </div>
+        </div>
+      </div>
+
+      <!-- PIX -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-qr-code text-info me-2"></i>PIX</span>
+            <span class="badge bg-<%= pixConfigurado ? 'success' : 'secondary' %>">
+              <%= pixConfigurado ? 'Configurado' : 'Não configurado' %>
+            </span>
+          </div>
+          <div class="card-body">
+            <form method="POST" action="/integracoes/pix/salvar">
+              <div class="mb-3">
+                <label class="form-label">Chave PIX *</label>
+                <input type="text" name="pix_chave" class="form-control" placeholder="CPF, CNPJ, email, telefone ou chave aleatória" value="<%= pix.pix_chave %>" required>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label">Nome do Titular *</label>
+                  <input type="text" name="pix_nome" class="form-control" value="<%= pix.pix_nome %>" required>
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Cidade</label>
+                  <input type="text" name="pix_cidade" class="form-control" value="<%= pix.pix_cidade %>">
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Webhook Secret (para validar notificações)</label>
+                <input type="password" name="pix_webhook_secret" class="form-control" value="<%= pix.pix_webhook_secret %>">
+                <small class="text-body-secondary">Usado para validar a assinatura HMAC das notificações</small>
+              </div>
+              <div class="mb-3 p-3 bg-dark rounded">
+                <label class="form-label text-body-secondary">URL do Webhook (configure no provedor PIX)</label>
+                <code class="d-block text-info" style="word-break:break-all;">http://SEU-DOMINIO/integracoes/pix/webhook</code>
+                <small class="text-body-secondary">Enviaremos POST com o identificador da transação</small>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Salvar Configurações</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Transações PIX -->
+        <div class="card shadow-sm mt-4">
+          <div class="card-header"><i class="bi bi-clock-history me-2"></i>Transações PIX</div>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr><th>ID</th><th>Identificador</th><th>Valor</th><th>Status</th><th>Contribuição</th><th>Data</th></tr>
+              </thead>
+              <tbody>
+                <% if (pixTransacoes.length === 0) { %>
+                  <tr><td colspan="6" class="text-center text-body-secondary py-3">Nenhuma transação PIX</td></tr>
+                <% } %>
+                <% pixTransacoes.forEach(t => { %>
+                <tr>
+                  <td><%= t.id %></td>
+                  <td style="font-size:0.7rem;"><%= t.identificador %></td>
+                  <td><%= (t.valor || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'}) %></td>
+                  <td>
+                    <span class="badge bg-<%= t.status === 'confirmado' ? 'success' : t.status === 'gerado' ? 'info' : 'warning' %>" style="font-size:0.65rem;">
+                      <%= t.status %>
+                    </span>
+                  </td>
+                  <td style="font-size:0.75rem;"><%= t.mes_referencia || '-' %><%= t.morador_nome ? ' (' + t.morador_nome + ')' : '' %></td>
+                  <td style="font-size:0.75rem;"><%= t.created_at %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Mercado Pago -->
+        <div class="card shadow-sm mt-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-currency-dollar text-primary me-2"></i>Mercado Pago (PIX Automático)</span>
+            <span class="badge bg-<%= mpConfigurado ? 'success' : 'secondary' %>">
+              <%= mpConfigurado ? 'Configurado' : 'Não configurado' %>
+            </span>
+          </div>
+          <div class="card-body">
+            <p class="text-body-secondary small">
+              <i class="bi bi-info-circle me-1"></i> Gera cobranças PIX reais via Mercado Pago.
+              Quando o morador paga, o sistema confirma automaticamente.
+            </p>
+            <form method="POST" action="/integracoes/mercadopago/salvar">
+              <div class="mb-3">
+                <label class="form-label">Access Token (produção)</label>
+                <input type="password" name="access_token" class="form-control" value="<%= mp.access_token %>">
+                <small class="text-body-secondary">Token gerado em Mercado Pago > Seu Negócio > Credenciais</small>
+              </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label">Email do Pagador</label>
+                  <input type="email" name="payer_email" class="form-control" placeholder="associacao@email.com" value="<%= mp.payer_email %>">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">Webhook Secret</label>
+                  <input type="password" name="webhook_secret" class="form-control" value="<%= mp.webhook_secret %>">
+                </div>
+              </div>
+              <div class="mb-3 p-3 bg-dark rounded">
+                <label class="form-label text-body-secondary">URL do Webhook (configurar no Mercado Pago)</label>
+                <code class="d-block text-info" style="word-break:break-all;">http://SEU-DOMINIO/integracoes/mercadopago/webhook</code>
+                <small class="text-body-secondary">Mercado Pago > Seu Negócio > Webhooks > Adicionar endpoint</small>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Salvar Configurações</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Endpoints -->
+    <div class="card shadow-sm mt-4">
+      <div class="card-header"><i class="bi bi-info-circle me-2"></i>Endpoints para Integração</div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead>
+              <tr><th>Endpoint</th><th>Método</th><th>Descrição</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/integracoes/pix/webhook</code></td>
+                <td><span class="badge bg-success">POST</span></td>
+                <td>Receber confirmações de pagamento PIX manual</td>
+              </tr>
+              <tr>
+                <td><code>/integracoes/pix/gerar/:id</code></td>
+                <td><span class="badge bg-info">GET</span></td>
+                <td>Gerar payload PIX copia e cola</td>
+              </tr>
+              <tr>
+                <td><code>/integracoes/mercadopago/webhook</code></td>
+                <td><span class="badge bg-success">POST</span></td>
+                <td>Webhook do Mercado Pago (notificações de pagamento)</td>
+              </tr>
+              <tr>
+                <td><code>/integracoes/mercadopago/criar/:id</code></td>
+                <td><span class="badge bg-success">POST</span></td>
+                <td>Criar cobrança PIX no Mercado Pago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-body-secondary small mt-2 mb-0">
+          <i class="bi bi-info-circle me-1"></i> O WhatsApp usa conexão direta via QR Code. Não são necessários tokens ou cadastros.
+        </p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const wppConnected = <%= wppStatus.connected ? 'true' : 'false' %>;
+    const wppScanning = <%= wppStatus.status === 'escaneie_o_qr' ? 'true' : 'false' %>;
+
+    async function atualizarQRCode() {
+      try {
+        const res = await fetch('/integracoes/whatsapp/qrcode');
+        const data = await res.json();
+        const img = document.getElementById('qrcode-img');
+        if (data.qrcode && img) {
+          img.src = data.qrcode;
+        }
+      } catch (e) {}
+    }
+
+    async function verificarStatus() {
+      try {
+        const res = await fetch('/integracoes/whatsapp/status');
+        const data = await res.json();
+        const badge = document.getElementById('wppStatusBadge');
+        if (data.connected && badge) {
+          badge.className = 'badge bg-success';
+          badge.textContent = 'Conectado';
+          if (!wppConnected) location.reload();
+        } else if (data.status === 'escaneie_o_qr' && badge) {
+          badge.className = 'badge bg-warning';
+          badge.textContent = 'Scanear QR';
+        }
+      } catch (e) {}
+    }
+
+    if (wppScanning) {
+      atualizarQRCode();
+      setInterval(atualizarQRCode, 3000);
+      setInterval(verificarStatus, 5000);
+    }
+    if (!wppConnected) {
+      setInterval(verificarStatus, 5000);
+    }
+  </script>
+</body>
+</html>
