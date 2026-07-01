@@ -1,4 +1,4 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth, Buttons } = require('whatsapp-web.js');
 const path = require('path');
 const db = require('../database');
 const PIXService = require('./pix');
@@ -28,12 +28,22 @@ const WhatsAppService = {
 
     const puppeteerOpts = {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
     };
-    const chromePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
     const fs = require('fs');
-    if (fs.existsSync(chromePath)) {
-      puppeteerOpts.executablePath = chromePath;
+    const caminhosChrome = [
+      'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      '/usr/bin/chromium',
+      '/usr/bin/chromium-browser',
+      '/usr/bin/google-chrome',
+      '/usr/bin/google-chrome-stable',
+      '/snap/bin/chromium'
+    ];
+    for (const p of caminhosChrome) {
+      if (fs.existsSync(p)) {
+        puppeteerOpts.executablePath = p;
+        break;
+      }
     }
     client = new Client({
       authStrategy: new LocalAuth({ dataPath: SESSION_DIR }),
@@ -216,20 +226,36 @@ const WhatsAppService = {
   },
 
   async _enviarMenu(from, morador) {
-    const menu = [
-      `🤖 *CondoBot - Assistente Virtual*`,
-      ``,
+    const botoes = new Buttons(
       `Olá ${morador.nome}! Escolha uma opção:`,
-      ``,
-      `1️⃣ - Ver débitos pendentes`,
-      `2️⃣ - Gerar PIX para pagamento`,
-      `3️⃣ - Falar com administrador`,
-      `4️⃣ - Extrato de contribuições`,
-      `0️⃣ - Sair`,
-      ``,
-      `Digite o número da opção desejada.`
-    ].join('\n');
-    await this.sendMessage(from, menu);
+      [
+        { body: '1️⃣ Ver débitos', id: '1' },
+        { body: '2️⃣ Gerar PIX', id: '2' },
+        { body: '3️⃣ Falar com admin', id: '3' },
+        { body: '4️⃣ Extrato', id: '4' },
+        { body: '0️⃣ Sair', id: '0' }
+      ],
+      '🤖 CondoBot - Assistente Virtual',
+      'Clique em uma opção acima ou digite o número'
+    );
+    try {
+      await client.sendMessage(from, botoes);
+    } catch (e) {
+      const menu = [
+        `🤖 *CondoBot - Assistente Virtual*`,
+        ``,
+        `Olá ${morador.nome}! Escolha uma opção:`,
+        ``,
+        `1️⃣ - Ver débitos pendentes`,
+        `2️⃣ - Gerar PIX para pagamento`,
+        `3️⃣ - Falar com administrador`,
+        `4️⃣ - Extrato de contribuições`,
+        `0️⃣ - Sair`,
+        ``,
+        `Digite o número da opção desejada.`
+      ].join('\n');
+      await this.sendMessage(from, menu);
+    }
   },
 
   async _verDebitos(from, morador) {
