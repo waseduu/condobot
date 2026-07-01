@@ -42,6 +42,8 @@ app.use('/financeiro', financeiroRoutes);
 app.use('/relatorios', relatoriosRoutes);
 app.use('/integracoes', integracoesRoutes);
 
+app.get('/health', (req, res) => res.send('ok'));
+
 app.get('/', (req, res) => {
   if (req.session.userId) {
     return res.redirect('/dashboard');

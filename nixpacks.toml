@@ -1,0 +1,5 @@
+[phases.apt]
+packages = ["chromium", "libxshmfence-dev", "nss", "nspr", "atk-bridge2.0-0", "libdrm2", "libgbm1", "libasound2"]
+
+[phases.setup]
+cmds = ["export PUPPETEER_SKIP_DOWNLOAD=true"]
