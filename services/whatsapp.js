@@ -33,17 +33,18 @@ const WhatsAppService = {
     const fs = require('fs');
     const caminhosChrome = [
       'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      '/usr/bin/chromium',
-      '/usr/bin/chromium-browser',
       '/usr/bin/google-chrome',
       '/usr/bin/google-chrome-stable',
-      '/snap/bin/chromium'
+      '/usr/bin/chromium',
+      '/usr/bin/chromium-browser'
     ];
     for (const p of caminhosChrome) {
-      if (fs.existsSync(p)) {
-        puppeteerOpts.executablePath = p;
-        break;
-      }
+      try {
+        if (fs.existsSync(p)) {
+          puppeteerOpts.executablePath = p;
+          break;
+        }
+      } catch (e) { /* ignora */ }
     }
     client = new Client({
       authStrategy: new LocalAuth({ dataPath: SESSION_DIR }),
