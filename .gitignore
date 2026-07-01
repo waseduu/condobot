@@ -1,6 +1,10 @@
 node_modules/
 wpp_session/
+.wwebjs_cache/
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
 server.log
 server.err
-*.db
 .env
