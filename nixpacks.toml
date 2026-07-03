@@ -1,2 +1,9 @@
+[phases.setup]
+cmds = [
+  "wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+  "apt-get update && apt-get install -y ./google-chrome-stable_current_amd64.deb 2>/dev/null || true",
+  "rm -f google-chrome-stable_current_amd64.deb"
+]
+
 [phases.apt]
 packages = ["libnss3", "libnspr4", "libatk-bridge2.0-0", "libdrm2", "libgbm1", "libxshmfence-dev", "libasound2", "libcups2", "libxkbcommon0"]
