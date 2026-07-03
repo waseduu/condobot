@@ -30,7 +30,7 @@ const WhatsAppService = {
 
     const puppeteerOpts = {
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-zygote']
     };
     const fs = require('fs');
     const caminhosChrome = [
