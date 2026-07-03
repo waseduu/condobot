@@ -1,3 +1,10 @@
+process.on('unhandledRejection', (err) => {
+  console.error('UNHANDLED REJECTION:', err?.message || err);
+});
+process.on('uncaughtException', (err) => {
+  console.error('UNCAUGHT EXCEPTION:', err?.message || err);
+});
+
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -55,8 +62,8 @@ app.use((req, res) => {
   res.status(404).render('login', { error: 'Página não encontrada' });
 });
 
-app.listen(PORT, () => {
-  console.log(`CondoBot rodando em http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`CondoBot rodando em http://0.0.0.0:${PORT}`);
   WhatsAppService.iniciar().catch(err => {
     console.error('Erro ao iniciar WhatsApp:', err.message);
   });
